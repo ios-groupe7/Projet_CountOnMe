@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     // Error check computed variables
     var expressionIsCorrect: Bool {
-        return elements.last != "+" && elements.last != "-"
+        return elements.last != "+" && elements.last != "-" && elements.last != "X" && elements.last != "/"
     }
     
     var expressionHaveEnoughElement: Bool {
@@ -53,11 +53,23 @@ class ViewController: UIViewController {
         textView.text.append(numberText)
     }
     
+    @IBAction func tappedDivisionButton(_ sender: UIButton) {
+        if (canAddOperator) {
+            textView.text.append(" / ")
+        } else {
+            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
+        }
+    }
+    
     @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
         if (canAddOperator) {
             textView.text.append(" X ")
         } else {
-            
+            let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
+            alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alertVC, animated: true, completion: nil)
         }
     }
     
@@ -107,6 +119,8 @@ class ViewController: UIViewController {
             switch operand {
             case "+": result = left + right
             case "-": result = left - right
+            case "/": result = left / right
+            case "X": result = left * right
             default: fatalError("Unknown operator !")
             }
             
