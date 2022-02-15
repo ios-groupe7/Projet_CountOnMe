@@ -63,6 +63,10 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func tappedAcButton(_ sender: UIButton) {
+        textView.text = "0"
+    }
+    
     @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
         if (canAddOperator) {
             textView.text.append(" X ")
