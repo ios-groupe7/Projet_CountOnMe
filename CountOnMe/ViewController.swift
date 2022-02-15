@@ -50,7 +50,11 @@ class ViewController: UIViewController {
             textView.text = ""
         }
         
-        textView.text.append(numberText)
+        if (textView.text == "0") {
+            textView.text = numberText
+        } else {
+            textView.text.append(numberText)
+        }
     }
     
     @IBAction func tappedDivisionButton(_ sender: UIButton) {
