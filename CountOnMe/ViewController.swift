@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     
     var canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-"
+        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "X"
     }
     
     var expressionHaveResult: Bool {
@@ -51,6 +51,14 @@ class ViewController: UIViewController {
         }
         
         textView.text.append(numberText)
+    }
+    
+    @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
+        if (canAddOperator) {
+            textView.text.append(" X ")
+        } else {
+            
+        }
     }
     
     @IBAction func tappedAdditionButton(_ sender: UIButton) {
