@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     
     var canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "X"
+        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "x"
     }
     
     var expressionHaveResult: Bool {
@@ -73,7 +73,7 @@ class ViewController: UIViewController {
     
     @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
         if (canAddOperator) {
-            textView.text.append(" X ")
+            textView.text.append(" x ")
         } else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
