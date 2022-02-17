@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
     
     var canAddOperator: Bool {
-        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "x"
+        return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "X"
     }
     
     var expressionHaveResult: Bool {
@@ -73,7 +73,7 @@ class ViewController: UIViewController {
     
     @IBAction func tappedMultiplicationButton(_ sender: UIButton) {
         if (canAddOperator) {
-            textView.text.append(" x ")
+            textView.text.append(" X ")
         } else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Un operateur est déja mis !", preferredStyle: .alert)
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -100,7 +100,54 @@ class ViewController: UIViewController {
             self.present(alertVC, animated: true, completion: nil)
         }
     }
+    func calculateExpression (left:String,right:String ,operand: String ) -> Int{
+        let left = Int(left)!
+        let operand = operand
+        let right = Int(right)!
+        
+        let result: Int
+        switch operand {
+        case "+": result = left + right
+        case "-": result = left - right
+        case "/": result = left / right
+        case "X": result = left * right
+        default: fatalError("Unknown operator !")
+        }
+        return result
+    }
 
+    func evaluatePriority(operand:String,indice: Int, expression:[String]) -> [String]{
+        var result : Int
+            result = calculateExpression(left: expression[indice-1], right: expression[indice+1], operand: operand)
+            var copyExpression = expression
+            copyExpression[indice-1] = String(result)
+            copyExpression.remove(at: indice)
+            copyExpression.remove(at: indice)
+            return copyExpression
+    }
+
+    func operationPriority(expression:[String]) -> Int{
+        let listOperand = ["/","X"]
+        var copyExpression = expression
+        var i = 0
+        while  (i<listOperand.count) {
+           var findIndex = copyExpression.firstIndex(of: listOperand[i])
+            while (findIndex != nil) {
+                copyExpression = evaluatePriority(operand: listOperand[i], indice:findIndex! , expression: copyExpression)
+                findIndex = copyExpression.firstIndex(of: listOperand[i])
+            }
+            i+=1
+        }
+        while copyExpression.count >= 3 {
+            let left = copyExpression[0]
+            let operand = copyExpression[1]
+            let right = copyExpression[2]
+            let result = calculateExpression(left: left, right: right, operand: operand)
+            copyExpression = Array(copyExpression.dropFirst(3))
+            copyExpression.insert("\(result)", at: 0)
+        }
+        return Int(copyExpression.joined())!
+    }
     @IBAction func tappedEqualButton(_ sender: UIButton) {
         guard expressionIsCorrect else {
             let alertVC = UIAlertController(title: "Zéro!", message: "Entrez une expression correcte !", preferredStyle: .alert)
@@ -115,28 +162,10 @@ class ViewController: UIViewController {
         }
         
         // Create local copy of operations
-        var operationsToReduce = elements
-        
+        let operationsToReduce = elements
+        print(operationsToReduce)
         // Iterate over operations while an operand still here
-        while operationsToReduce.count > 1 {
-            let left = Int(operationsToReduce[0])!
-            let operand = operationsToReduce[1]
-            let right = Int(operationsToReduce[2])!
-            
-            let result: Int
-            switch operand {
-            case "+": result = left + right
-            case "-": result = left - right
-            case "/": result = left / right
-            case "X": result = left * right
-            default: fatalError("Unknown operator !")
-            }
-            
-            operationsToReduce = Array(operationsToReduce.dropFirst(3))
-            operationsToReduce.insert("\(result)", at: 0)
-        }
-        
-        textView.text.append(" = \(operationsToReduce.first!)")
+        textView.text.append(" = \(operationPriority(expression:operationsToReduce))")
     }
 
 }
