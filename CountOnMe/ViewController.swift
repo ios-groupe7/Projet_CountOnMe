@@ -28,7 +28,10 @@ class ViewController: UIViewController {
     var canAddOperator: Bool {
         return elements.last != "+" && elements.last != "-" && elements.last != "/" && elements.last != "X"
     }
-    
+    var canAddComma: Bool{
+        let test : Bool = !(elements.last!.contains(","))
+        return test
+    }
     var expressionHaveResult: Bool {
         return textView.text.firstIndex(of: "=") != nil
     }
@@ -45,14 +48,23 @@ class ViewController: UIViewController {
         guard let numberText = sender.title(for: .normal) else {
             return
         }
-        
         if expressionHaveResult {
             textView.text = ""
         }
-        
+        if(numberText == "," && canAddComma == false){
+                let alertVC = UIAlertController(title: "Comma!", message: "Double comma interdit !", preferredStyle: .alert)
+                alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                return self.present(alertVC, animated: true, completion: nil)
+        }
         if (textView.text == "0") {
-            textView.text = numberText
-        } else {
+            if(numberText == ","){
+                textView.text.append(numberText)
+            }
+            else{
+                 textView.text = numberText
+            }
+        }
+        else {
             textView.text.append(numberText)
         }
     }
@@ -100,12 +112,12 @@ class ViewController: UIViewController {
             self.present(alertVC, animated: true, completion: nil)
         }
     }
-    func calculateExpression (left:String,right:String ,operand: String ) -> Int{
-        let left = Int(left)!
+    func calculateExpression (left:String,right:String ,operand: String ) -> Double{
+        let left = Double(left.replacingOccurrences(of: ",", with: "."))!
         let operand = operand
-        let right = Int(right)!
+        let right = Double(right.replacingOccurrences(of: ",", with: "."))!
         
-        let result: Int
+        let result: Double
         switch operand {
         case "+": result = left + right
         case "-": result = left - right
@@ -117,7 +129,7 @@ class ViewController: UIViewController {
     }
 
     func evaluatePriority(operand:String,indice: Int, expression:[String]) -> [String]{
-        var result : Int
+        var result : Double
             result = calculateExpression(left: expression[indice-1], right: expression[indice+1], operand: operand)
             var copyExpression = expression
             copyExpression[indice-1] = String(result)
@@ -126,7 +138,7 @@ class ViewController: UIViewController {
             return copyExpression
     }
 
-    func operationPriority(expression:[String]) -> Int{
+    func operationPriority(expression:[String]) -> Double{
         let listOperand = ["/","X"]
         var copyExpression = expression
         var i = 0
@@ -146,7 +158,7 @@ class ViewController: UIViewController {
             copyExpression = Array(copyExpression.dropFirst(3))
             copyExpression.insert("\(result)", at: 0)
         }
-        return Int(copyExpression.joined())!
+        return Double(copyExpression.joined())!
     }
     @IBAction func tappedEqualButton(_ sender: UIButton) {
         guard expressionIsCorrect else {
@@ -165,7 +177,9 @@ class ViewController: UIViewController {
         let operationsToReduce = elements
         print(operationsToReduce)
         // Iterate over operations while an operand still here
-        textView.text.append(" = \(operationPriority(expression:operationsToReduce))")
+        let resultOperation = String(format:"%g" , locale: Locale(identifier: "de"),operationPriority(expression:operationsToReduce))
+        
+        textView.text.append(" = \(resultOperation)")
     }
 
 }
